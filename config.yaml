@@ -1,0 +1,94 @@
+EXPERIMENT_NAME: "affwild_long_clips_mood_emotion_5frames_tl200_tstep49_tstride3"
+
+# COMMENTS: "default pytorch weights are used. Linear layers are initialized with xavier uniform"
+COMMENTS: "With temporal attention inside resnet, input is long clips with frames uniform selected."
+
+DEVICE: "cuda:0"
+
+IS_DATA_PARALLEL: False
+GPU_IDS: [0, 1, 2, 3]
+
+# --------- Dataset parameters ----------
+DATA_ROOT: "../AffWild/affwild_cropped/cropped_aligned"
+
+# path containing training, validation, and test csv
+TRAIN_CSV: "affwild_long_clips_train_mood_valence_5frames_tl200_tstep49_tstride3.csv"
+# REDUCED_TRAIN_CSV: "../affwild_reduced_train_individual_frames_valence_mood.csv"
+
+VAL_CSV: "affwild_long_clips_val_mood_valence_5frames_tl200_tstep49_tstride3.csv"
+
+TEST_CSV: "affwild_long_clips_test_mood_valence_5frames_tl200_tstep49_tstride3.csv"
+
+# image shape
+# choose image size 256 for SiameseEmoNetMLP
+# IMAGE_SHAPE: 256  # Means (3, 64, 64)
+
+
+#Model chosen
+MODEL_NAME: "MoodEmoNet"
+#EmoMoodNet, EmoMoodVectors, MoodEmoNet, MoodDeltaEmoNet, TSNet
+
+#Number of folds for cross-validation
+FOLDS: 5
+
+# ----------- Data Loader ----------
+
+BATCH_SIZE: 70
+TEST_BATCH_SIZE: 70
+NUM_WORKERS: 10
+RANDOM_STATE: 10
+DROPOUT_RATE: 0.5
+
+# ----------- OPTIMIZERS ------------
+WEIGHT_DECAY: 0.0001
+
+
+# ----------- LEARNING_PARAMETERS ------------
+LEARNING_RATE: 0.001
+NUM_EPOCHS: 15
+LOG_INTERVAL: 100
+
+
+# ------------------- EARLY STOPPING -------------------------
+IS_EARLY_STOPPING: False
+
+TOLERANCE_EARLY_STOP: 5
+DELTA_EARLY_STOP: 0.2
+
+# ---------------------LINEAR NET -----------------------------
+IS_PRETRAINED_MOOD: True
+IS_PRETRAINED_DELTA: True
+IS_PRETRAINED_EMOFAN: True
+
+FEAT_FUSION_MODE: 'mood_emotion' # choices from ['mood_emotion', 'mood_delta_emotion']
+
+RESNET_DEPTH: 18
+CLASS_NUM_BRANCH1: 3
+CLASS_NUM_BRANCH2: 3
+
+EMOFAN_EMOTIONS: 8
+FEAT_FUSION_MTCLAR: "concat"   # choices from ["concat", "absolute", "multiply"]
+NUM_NEURONS_MTCLAR: [1, 2, 1]
+NUM_NEURONS_FC: 1
+
+
+#----------------- RESNET_EMONET ------------------------
+
+FEAT_FUSION: 'concat' # choices from ["concat", "absolute", "multiply"]
+NUM_FRAMES: 5
+TEMPORAL_LENGTH: 200
+TEMPORAL_STEP: 49
+TEMPORAL_STRIDE: 3
+
+NUM_MOOD_CLASSES: 3
+NUM_DELTA_CLASSES: 3
+STEP_SIZE: 10  # Learning rate scheduler step size
+GAMMA: 0.1
+
+MOOD_WTS: [0.9, 4.34, 13.5]        # ORIGINAL WTS: [1.44, 4.34, 12.5]
+DELTA_WTS: [11.0, 1.98, 2.22]        # ORIGINAL WTS: [11.11, 2.22, 2.22]
+
+TEACHER_MODEL: "MoodDeltaEmoNet"
+TEACHER_DIR: "20231005-051405_resnet_long_clips_mood_delta_emotion_5frames_tl200_tstep49_tstride3"
+ALPHA: 0.25
+WTS: (0.35, 0.65, 0.5)
